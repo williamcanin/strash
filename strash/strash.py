@@ -100,7 +100,7 @@ class Strash:
         return take_all_trash_cans_
 
     @staticmethod
-    def command(dir_, steps: int) -> str:
+    def command(dir_, steps) -> str:
         return f'find "{dir_}" -depth -type f -exec shred -v -n {steps} -z -u {{}} \\;'
 
     def verify_user(self, uid) -> bool(object):
