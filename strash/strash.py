@@ -181,7 +181,7 @@ class Strash:
                 print("Done!")
 
                 return True
-            print("All empty trash.")
+            print("All empty trash. :)")
         except Exception as err:
             print("There was an error with the program code !!!", err)
             return False
