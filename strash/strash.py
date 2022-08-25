@@ -29,7 +29,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 CONFIG = {
     "appname": "strash",
-    "appscript": "strash.py",
+    "appscript": "strash",
     "appversion": "0.2.0",
     "python_version": 3,
     "userhome": expanduser("~"),
@@ -169,7 +169,7 @@ class Strash:
                 usage=CONFIG["appscript"] + " { run | credits }",
                 description=f'{CONFIG["appname"]} that cleans the trash safely without leaving a trace.',
                 formatter_class=RawTextHelpFormatter,
-                epilog="See you later!!",
+                epilog=f"{CONFIG['appname']} © 2018-{date.today().year} - All Right Reserved.",
             )
             parser.add_argument(
                 "command",
@@ -179,11 +179,11 @@ class Strash:
                 help="run      clean the trash safely.\ncredits  show credits ",
             )
             parser.add_argument(
-                "-c",
-                "--close",
+                "-k",
+                "--kill",
                 action="store_const",
-                const="close",
-                metavar="-c, --close",
+                const="kill",
+                metavar="-k, --kill",
                 help="clean the trash safely and close the terminal.",
             )
             args = parser.parse_args()
@@ -201,7 +201,7 @@ class Strash:
         self.verify_user(0)
         self.verify_dependencies()
 
-        if self.menu().command == "run":
+        if self.menu().command == "":
             if self.menu().close != "close":
                 self.clean()
             else:
@@ -212,6 +212,18 @@ class Strash:
                 os.kill(os.getppid(), signal.SIGHUP)
         elif self.menu().command == "credits":
             self.credits()
+
+        # if self.menu().command == "run":
+        #     if self.menu().close != "close":
+        #         self.clean()
+        #     else:
+        #         import signal
+
+        #         self.clean()
+        #         # Close terminal
+        #         os.kill(os.getppid(), signal.SIGHUP)
+        # elif self.menu().command == "credits":
+        #     self.credits()
 
 
 if __name__ == "__main__":
