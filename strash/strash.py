@@ -57,6 +57,9 @@ Website: {CONFIG['author1']['website']}
 GitHub: {CONFIG['author1']['github']}
 Locale: {CONFIG['author1']['locale']}
 
+Thanks dependencies:
+> {CONFIG["dependencies"]}
+
 {CONFIG['appname']} © 2018-{date.today().year} - All Right Reserved.
 Home: http://github.com/williamcanin/strash
 """
