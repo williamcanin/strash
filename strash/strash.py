@@ -65,6 +65,7 @@ Home: http://github.com/williamcanin/strash
 """
 
 
+# Exceptions class
 class IncompatibleVersion(Exception):
     """Raised when the installed Python version is incompatible"""
 
@@ -88,6 +89,7 @@ class AbsentDependency(Exception):
         super().__init__(f"{self.message}{self.pkg}")
 
 
+# Strash class
 class Strash:
     @staticmethod
     def credits():
