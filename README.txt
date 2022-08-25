@@ -5,10 +5,6 @@
   Strash is a simple script for Linux with the function to safely remove FILES
 from the recycle bin with no chance of recovery.
 
-[ VERSION ]
-
-  Current: 1.0.3
-
 [ DEPENDENCIES ]
 
   * linux
