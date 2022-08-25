@@ -100,8 +100,8 @@ class Strash:
         return take_all_trash_cans_
 
     @staticmethod
-    def command(dir_) -> str:
-        return f'find "{dir_}" -depth -type f -exec shred -v -n 4 -z -u {{}} \\;'
+    def command(dir_, steps: int) -> str:
+        return f'find "{dir_}" -depth -type f -exec shred -v -n {steps} -z -u {{}} \\;'
 
     def verify_user(self, uid) -> bool(object):
         """
@@ -139,11 +139,11 @@ class Strash:
                 raise Exception(f"The following dependencies are missing: {item}")
         return True
 
-    def clean(self) -> bool(object):
+    def clean(self, steps) -> bool(object):
         # print("Cleaning the trash can safely ...")
 
         path_trash_user = join(CONFIG["userhome"], ".local/share/Trash/files/")
-        clean_trash_user = self.command(path_trash_user)
+        clean_trash_user = self.command(path_trash_user, steps)
 
         try:
             # Clearing the system's default recycle bin.
@@ -151,7 +151,9 @@ class Strash:
 
             # Clearing other trash cans from other devices
             for item in self.take_all_trash_cans():
-                check_output(self.command(item), shell=True, universal_newlines=True)
+                check_output(
+                    self.command(item, steps), shell=True, universal_newlines=True
+                )
 
             # Cleaning up blank folders
             check_output("gio trash --empty", shell=True, universal_newlines=True)
@@ -176,16 +178,24 @@ class Strash:
                 epilog=f"{CONFIG['appname']} © 2018-{date.today().year} - All Right Reserved.",
             )
             parser.add_argument(
+                "-n",
+                "--iterations",
+                action="store",
+                default="3",
+                metavar="",
+                help="overwrites N times instead of 3, the default",
+            )
+            parser.add_argument(
                 "-k",
                 "--kill",
                 action="store_true",
-                help="clean the trash safely and close the terminal.",
+                help="clean the trash safely and close the terminal",
             )
             parser.add_argument(
                 "-c",
                 "--credits",
                 action="store_true",
-                help="show credits.",
+                help="show credits",
             )
             args = parser.parse_args()
             return args
@@ -202,14 +212,16 @@ class Strash:
         self.verify_user(0)
         self.verify_dependencies()
 
+        iterations = self.menu().iterations
+
         if self.menu().credits:
             self.credits()
         elif self.menu().kill:
-            self.clean()
+            self.clean(iterations)
             # Closed console
             os.kill(os.getppid(), signal.SIGHUP)
         elif not self.menu().credits and not self.menu().kill:
-            self.clean()
+            self.clean(iterations)
 
 
 if __name__ == "__main__":
