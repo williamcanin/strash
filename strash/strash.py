@@ -4,17 +4,15 @@
 # Information:
 #
 # ******************************************************************************
-# Type: Python Script
+# Type: Python
 # Linux Compatibility: Linux distros
 # Description: Script that cleans the trash safely without leaving a trace.
 # Script Name: strash
 
 # Author: William C. Canin
 #   Contacts:
-#   E-Mail: william.costa.canin@gmail.com
-#   WebSite: https://williamcanin.github.io
+#   Personal page: https://williamcanin.github.io
 #   GitHub: https://github.com/williamcanin
-#   License: MIT.
 
 import os
 import signal
