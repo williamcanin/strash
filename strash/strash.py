@@ -65,6 +65,29 @@ Home: http://github.com/williamcanin/strash
 """
 
 
+class IncompatibleVersion(Exception):
+    """Raised when the installed Python version is incompatible"""
+
+    def __init__(
+        self,
+        pyversion,
+        message="You are not using a version of Python that the script supports. "
+        "Must be using Python: ",
+    ):
+        self.pyversion = pyversion
+        self.message = message
+        super().__init__(f"{self.message}{self.pyversion}")
+
+
+class AbsentDependency(Exception):
+    """Raised when there is a lack of dependency"""
+
+    def __init__(self, pkg, message="The following dependencies are missing: "):
+        self.pkg = pkg
+        self.message = message
+        super().__init__(f"{self.message}{self.pkg}")
+
+
 class Strash:
     @staticmethod
     def credits():
@@ -109,9 +132,9 @@ class Strash:
         """
 
         if os.geteuid() == uid:
-            print(f'{CONFIG["appname"]} can not be run with superuser (root). Aborted!')
-            return False
-
+            raise PermissionError(
+                f'"{CONFIG["appname"]}" can not be run with superuser (root). Aborted!'
+            )
         return True
 
     def python_version_required(self) -> bool(object):
@@ -119,24 +142,18 @@ class Strash:
         Function to check the version of Python that this script uses.
         """
 
-        try:
-            if version_info[0] != CONFIG["python_version"]:
-                raise Exception(
-                    "You are not using a version of Python that the script supports. "
-                    + "Must be using Python {}.".format(CONFIG["python_version"])
-                )
-            return True
-        except Exception as err:
-            print("Error!", err)
+        if version_info[0] != CONFIG["python_version"]:
+            raise IncompatibleVersion(CONFIG["python_version"])
+        return True
 
     def verify_dependencies(self) -> bool(object):
         """
         Function to check script dependencies.
         """
 
-        for item in CONFIG["dependencies"]:
-            if not isfile("/usr/bin/" + item):
-                raise Exception(f"The following dependencies are missing: {item}")
+        for pkg in CONFIG["dependencies"]:
+            if not isfile(f"/usr/bin/{pkg}"):
+                raise AbsentDependency(pkg)
         return True
 
     def clean(self, steps) -> bool(object):
