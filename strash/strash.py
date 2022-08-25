@@ -17,6 +17,7 @@
 #   License: MIT.
 
 import os
+import signal
 from os.path import join, expanduser, isfile, isdir
 from datetime import date
 from subprocess import check_output
@@ -166,25 +167,22 @@ class Strash:
         try:
             parser = ArgumentParser(
                 prog=CONFIG["appname"],
-                usage=CONFIG["appscript"] + " { run | credits }",
-                description=f'{CONFIG["appname"]} that cleans the trash safely without leaving a trace.',
+                usage=f"{CONFIG['appscript']} [options]",
+                description=f'{CONFIG["appname"].title()} that cleans the trash safely without leaving a trace.',
                 formatter_class=RawTextHelpFormatter,
                 epilog=f"{CONFIG['appname']} © 2018-{date.today().year} - All Right Reserved.",
             )
             parser.add_argument(
-                "command",
-                action="store",
-                metavar="{ run | credits }",
-                type=str,
-                help="run      clean the trash safely.\ncredits  show credits ",
-            )
-            parser.add_argument(
                 "-k",
                 "--kill",
-                action="store_const",
-                const="kill",
-                metavar="-k, --kill",
+                action="store_true",
                 help="clean the trash safely and close the terminal.",
+            )
+            parser.add_argument(
+                "-c",
+                "--credits",
+                action="store_true",
+                help="show credits.",
             )
             args = parser.parse_args()
             return args
@@ -201,29 +199,14 @@ class Strash:
         self.verify_user(0)
         self.verify_dependencies()
 
-        if self.menu().command == "":
-            if self.menu().close != "close":
-                self.clean()
-            else:
-                import signal
-
-                self.clean()
-                # Close terminal
-                os.kill(os.getppid(), signal.SIGHUP)
-        elif self.menu().command == "credits":
+        if self.menu().credits:
             self.credits()
-
-        # if self.menu().command == "run":
-        #     if self.menu().close != "close":
-        #         self.clean()
-        #     else:
-        #         import signal
-
-        #         self.clean()
-        #         # Close terminal
-        #         os.kill(os.getppid(), signal.SIGHUP)
-        # elif self.menu().command == "credits":
-        #     self.credits()
+        elif self.menu().kill:
+            self.clean()
+            # Closed console
+            os.kill(os.getppid(), signal.SIGHUP)
+        elif not self.menu().credits and not self.menu().kill:
+            self.clean()
 
 
 if __name__ == "__main__":
