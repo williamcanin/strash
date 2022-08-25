@@ -13,7 +13,6 @@ from the recycle bin with no chance of recovery.
 
   * Linux System
   * find
-  * sed
   * gio (glib2)
   * shred
 
