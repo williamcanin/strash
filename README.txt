@@ -11,10 +11,11 @@ from the recycle bin with no chance of recovery.
 
 [ DEPENDENCIES ]
 
-  * Linux System
-  * find
-  * gio (glib2)
-  * shred
+  * linux
+	* python >= 3.9
+  * find >= 4.8.0
+  * gio (glib2) >= 2.70
+  * shred >= 9.0
 
 [ INSTALL ]
 
