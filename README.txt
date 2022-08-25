@@ -1,8 +1,8 @@
-# Strash
+# sTrash
 
 [ ABOUT ]
 
-  Strash is a simple script for Linux with the function to safely remove FILES
+  sTrash is a simple script for Linux with the function to safely remove FILES
 from the recycle bin with no chance of recovery.
 
 [ DEPENDENCIES ]
@@ -45,7 +45,7 @@ from the recycle bin with no chance of recovery.
   Tests:
 
     The file to run tests can be found in the "tests" folder. The file
-    "runtests.sh" will run the "Strash" tests (strash/strash.py).
+    "runtests.sh" will run the "sTrash" tests (strash/strash.py).
 
     The Python module used for testing is the **unittest**.
 
@@ -53,4 +53,4 @@ from the recycle bin with no chance of recovery.
 
   https://github.com/williamcanin/strash/blob/main/LICENSE
 
- © Strash. William C. Canin. All rights reserved. ®
+ © sTrash. William C. Canin. All rights reserved. ®

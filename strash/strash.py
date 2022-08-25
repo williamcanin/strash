@@ -20,7 +20,7 @@ import os
 import signal
 from os.path import join, expanduser, isfile, isdir
 from datetime import date
-from subprocess import check_output, PIPE, STDOUT, run, Popen, PIPE
+from subprocess import check_output, PIPE, Popen
 from re import sub
 from sys import version_info
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -29,7 +29,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 # from pdb import set_trace
 
 CONFIG = {
-    "appname": "strash",
+    "appname": "sTrash",
     "appscript": "strash",
     "appversion": "0.2.0",
     "python_version": 3,
@@ -195,7 +195,7 @@ class Strash:
             parser = ArgumentParser(
                 prog=CONFIG["appname"],
                 usage=f"{CONFIG['appscript']} [options]",
-                description=f'{CONFIG["appname"].title()} that cleans the trash safely without leaving a trace.',
+                description=f'{CONFIG["appname"]} that cleans the trash safely without leaving a trace.',
                 formatter_class=RawTextHelpFormatter,
                 epilog=f"{CONFIG['appname']} © 2018-{date.today().year} - All Right Reserved.",
             )
