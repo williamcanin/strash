@@ -20,7 +20,7 @@ import os
 import signal
 from os.path import join, expanduser, isfile, isdir
 from datetime import date
-from subprocess import check_output
+from subprocess import check_output, PIPE, STDOUT, run, Popen, PIPE
 from re import sub
 from sys import version_info
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -100,17 +100,16 @@ class Strash:
         print(CREDITS)
 
     @staticmethod
-    def take_all_trash_cans() -> set:
+    def take_all_trash_cans(check) -> set:
         """
         Function to get all ROOT directory from recycle bins on devices
         """
 
-        # unix: gio list trash: | sed 's/\\/\//g; s/%20/ /g; s/^/"/g; s/$/"/g; s/files\/.*$/files\//g' | sort -u
-        out = check_output("gio list trash:", shell=True, universal_newlines=True)
         take_all_trash_cans_ = set()
 
-        for i in out.split():
+        for i in check.split():
 
+            # unix: gio list trash: | sed 's/\\/\//g; s/%20/ /g; s/^/"/g; s/$/"/g; s/files\/.*$/files\//g' | sort -u
             # Replace backslashes with forward slashes
             bar_ = sub(r"\\", r"/", i)
 
@@ -165,20 +164,24 @@ class Strash:
         clean_trash_user = self.command(path_trash_user, steps)
 
         try:
-            # Clearing the system's default recycle bin.
-            check_output(clean_trash_user, shell=True, universal_newlines=True)
+            p = Popen(
+                "gio list trash:", shell=True, universal_newlines=True, stdout=PIPE
+            )
+            check = p.communicate()[0]
+            if check:
+                print("Cleaning the trash can safely ...")
+                # Clearing the system's default recycle bin.
+                check_output(clean_trash_user, shell=True, universal_newlines=True)
+                # Clearing other trash cans from other devices
+                for item in self.take_all_trash_cans(check):
+                    cmd = self.command(item, steps)
+                    check_output(cmd, shell=True, universal_newlines=True)
+                # Cleaning up blank folders
+                Popen("gio trash --empty", shell=True)
+                print("Done!")
 
-            # Clearing other trash cans from other devices
-            for item in self.take_all_trash_cans():
-                check_output(
-                    self.command(item, steps), shell=True, universal_newlines=True
-                )
-
-            # Cleaning up blank folders
-            check_output("gio trash --empty", shell=True, universal_newlines=True)
-
-            # print("Done!")
-            return True
+                return True
+            print("All empty trash.")
         except Exception as err:
             print("There was an error with the program code !!!", err)
             return False
