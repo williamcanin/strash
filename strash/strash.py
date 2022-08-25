@@ -158,7 +158,6 @@ class Strash:
         return True
 
     def clean(self, steps) -> bool(object):
-        # print("Cleaning the trash can safely ...")
 
         path_trash_user = join(CONFIG["userhome"], ".local/share/Trash/files/")
         clean_trash_user = self.command(path_trash_user, steps)
@@ -167,21 +166,32 @@ class Strash:
             p = Popen(
                 "gio list trash:", shell=True, universal_newlines=True, stdout=PIPE
             )
+
+            # Checks if there is a recycle bin with content
             check = p.communicate()[0]
+
+            # If there is a full trash can, do the whole process.
             if check:
                 print("Cleaning the trash can safely ...")
+
                 # Clearing the system's default recycle bin.
                 check_output(clean_trash_user, shell=True, universal_newlines=True)
+
                 # Clearing other trash cans from other devices
                 for item in self.take_all_trash_cans(check):
                     cmd = self.command(item, steps)
                     check_output(cmd, shell=True, universal_newlines=True)
+
                 # Cleaning up blank folders
                 Popen("gio trash --empty", shell=True)
+
                 print("Done!")
 
                 return True
+
+            # Show message only if all recycle bins are empty.
             print("All empty trash. :)")
+
         except Exception as err:
             print("There was an error with the program code !!!", err)
             return False
