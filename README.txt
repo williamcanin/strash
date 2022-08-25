@@ -18,12 +18,12 @@ from the recycle bin with no chance of recovery.
 
 [ INSTALL ]
 
-	$ git clone --single-branch https://github.com/williamcanin/strash.git; cd strash
+  $ git clone --single-branch https://github.com/williamcanin/strash.git; cd strash
   $ sudo make install
 
 [UNINSTALL]
 
-	$ cd strash
+  $ cd strash
   $ sudo make uninstall
 
 [ USAGE ]
