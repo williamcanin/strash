@@ -12,7 +12,7 @@ from the recycle bin with no chance of recovery.
 [ DEPENDENCIES ]
 
   * linux
-	* python >= 3.9
+  * python >= 3.9
   * find >= 4.8.0
   * gio (glib2) >= 2.70
   * shred >= 9.0
