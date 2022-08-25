@@ -34,7 +34,7 @@ CONFIG = {
     "appversion": "0.2.0",
     "python_version": 3,
     "userhome": expanduser("~"),
-    "dependencies": ["find", "shred", "gio", "sed"],
+    "dependencies": ["find", "shred", "gio"],
     "author1": {
         "name": "William C. Canin",
         "email": "william.costa.canin@gmail.com",
