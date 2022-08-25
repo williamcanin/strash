@@ -257,5 +257,4 @@ class Strash:
 
 
 if __name__ == "__main__":
-    s = Strash()
-    s.main()
+    Strash().main()
