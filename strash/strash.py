@@ -27,12 +27,11 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 # from pdb import set_trace
 
 CONFIG = {
-    "appname": "sTrash",
-    "appscript": "strash",
-    "appversion": "0.2.0",
-    "python_version": 3,
-    "userhome": expanduser("~"),
-    "dependencies": ["find", "shred", "gio"],
+    "appname": ["sTrash", "strash"],  # Application/Script name
+    "appversion": "0.2.0",  # Version script
+    "pyversion": 3,  # Python version required
+    "home": expanduser("~"),  # HOME user
+    "dep": ["find", "shred", "gio"],  # Dependencies
     "author1": {
         "name": "William C. Canin",
         "email": "william.costa.canin@gmail.com",
@@ -44,7 +43,7 @@ CONFIG = {
 
 CREDITS = f"""
 *************************
-{CONFIG['appname']} - Version {CONFIG['appversion']}
+{CONFIG['appname'][0]} - Version {CONFIG['appversion']}
 *************************
 
 Credits:
@@ -56,9 +55,9 @@ GitHub: {CONFIG['author1']['github']}
 Locale: {CONFIG['author1']['locale']}
 
 Thanks dependencies:
-> {CONFIG["dependencies"]}
+> {CONFIG["dep"]}
 
-{CONFIG['appname']} © 2018-{date.today().year} - All Right Reserved.
+{CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.
 Home: http://github.com/williamcanin/strash
 """
 
@@ -70,8 +69,8 @@ class IncompatibleVersion(Exception):
     def __init__(
         self,
         pyversion,
-        message="You are not using a version of Python that the script supports. "
-        "Must be using Python: ",
+        message=f"{CONFIG['appname'][0]} requires Python version {CONFIG['pyversion']}."
+        f"Are you using version {version_info[0]}",
     ):
         self.pyversion = pyversion
         self.message = message
@@ -87,21 +86,31 @@ class AbsentDependency(Exception):
         super().__init__(f"{self.message}{self.pkg}")
 
 
+class InvalidOS(Exception):
+    """Created when OS is not posix"""
+
+    def __init__(
+        self,
+        os,
+        message=f"{CONFIG['appname'][0]} is only compatible with \"posix\" systems."
+        "Your system is a: ",
+    ):
+        self.os = os
+        self.message = message
+        super().__init__(f"{self.message}{self.os}")
+
+
 # Strash class
 class Strash:
     @staticmethod
     def credits():
-        """
-        Function to show credits.
-        """
+        """Function to show credits."""
 
         print(CREDITS)
 
     @staticmethod
     def take_all_trash_cans(check) -> set:
-        """
-        Function to get all ROOT directory from recycle bins on devices
-        """
+        """Function to get all ROOT directory from recycle bins on devices."""
 
         take_all_trash_cans_ = set()
 
@@ -123,46 +132,53 @@ class Strash:
 
     @staticmethod
     def command(dir_, steps) -> str:
-        return f'find "{dir_}" -depth -type f -exec shred -v -n {steps} -z -u {{}} \\;'
+        """Function that stores the recycle bin cleanup code structure."""
+        return f'{CONFIG["dep"][0]} "{dir_}" -depth -type f -exec {CONFIG["dep"][1]} -v -n {steps} -z -u {{}} \\;'
 
-    def verify_user(self, uid) -> bool(object):
-        """
-        Function to check if script is running with superuser.
-        """
+    @staticmethod
+    def verify_os() -> bool:
+        """Function to verify OS (Compatible with Posix)."""
+
+        if os.name != "posix":
+            raise InvalidOS(os.name)
+        return True
+
+    def verify_user(self, uid) -> bool:
+        """Function to check if script is running with superuser."""
 
         if os.geteuid() == uid:
             raise PermissionError(
-                f'"{CONFIG["appname"]}" can not be run with superuser (root). Aborted!'
+                f'"{CONFIG["appname"][0]}" can not be run with superuser (root). Aborted!'
             )
         return True
 
-    def python_version_required(self) -> bool(object):
-        """
-        Function to check the version of Python that this script uses.
-        """
+    def pyversion_required(self) -> bool:
+        """Function to check the version of Python that this script uses."""
 
-        if version_info[0] != CONFIG["python_version"]:
-            raise IncompatibleVersion(CONFIG["python_version"])
+        if version_info[0] != CONFIG["pyversion"]:
+            raise IncompatibleVersion(CONFIG["pyversion"])
         return True
 
-    def verify_dependencies(self) -> bool(object):
-        """
-        Function to check script dependencies.
-        """
+    def verify_dependencies(self) -> bool:
+        """Function to check script dependencies."""
 
-        for pkg in CONFIG["dependencies"]:
+        for pkg in CONFIG["dep"]:
             if not isfile(f"/usr/bin/{pkg}"):
                 raise AbsentDependency(pkg)
         return True
 
-    def clean(self, steps) -> bool(object):
+    def clean(self, steps) -> bool:
+        """Function that performs the entire trash disposal operation."""
 
-        path_trash_user = join(CONFIG["userhome"], ".local/share/Trash/files/")
+        path_trash_user = join(CONFIG["home"], ".local/share/Trash/files/")
         clean_trash_user = self.command(path_trash_user, steps)
 
         try:
             p = Popen(
-                "gio list trash:", shell=True, universal_newlines=True, stdout=PIPE
+                f"{CONFIG['dep'][2]} list trash:",
+                shell=True,
+                universal_newlines=True,
+                stdout=PIPE,
             )
 
             # Checks if there is a recycle bin with content
@@ -192,20 +208,21 @@ class Strash:
 
         except Exception as err:
             print("There was an error with the program code !!!", err)
-            return False
+            exit(1)
+        except PermissionError:
+            print(f"{CONFIG['appname'][0]} is not allowed to perform the tasks.")
+            exit(1)
 
     def menu(self):
-        """
-        Function to create menu.
-        """
+        """Function to create menu."""
 
         try:
             parser = ArgumentParser(
-                prog=CONFIG["appname"],
-                usage=f"{CONFIG['appscript']} [options]",
-                description=f'{CONFIG["appname"]} that cleans the trash safely without leaving a trace.',
+                prog=CONFIG["appname"][0],
+                usage=f"{CONFIG['appname'][1]} [options]",
+                description=f'{CONFIG["appname"][0]} that cleans the trash safely without leaving a trace.',
                 formatter_class=RawTextHelpFormatter,
-                epilog=f"{CONFIG['appname']} © 2018-{date.today().year} - All Right Reserved.",
+                epilog=f"{CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.",
             )
             parser.add_argument(
                 "-n",
@@ -238,7 +255,7 @@ class Strash:
         Function main. Where the logic will be.
         """
 
-        self.python_version_required()
+        self.pyversion_required()
         self.verify_user(0)
         self.verify_dependencies()
 
