@@ -207,10 +207,13 @@ class Strash:
             print("All empty trash. :)")
 
         except Exception as err:
-            print("There was an error with the program code !!!", err)
+            print(
+                f"An unexpected error occurred that {CONFIG['appname'][0]} cannot identify.",
+                err,
+            )
             exit(1)
-        except PermissionError:
-            print(f"{CONFIG['appname'][0]} is not allowed to perform the tasks.")
+        except PermissionError as err:
+            print(f"{CONFIG['appname'][0]} is not allowed to perform the tasks.", err)
             exit(1)
 
     def menu(self):
@@ -251,9 +254,7 @@ class Strash:
             print("Error in passing arguments..", err)
 
     def main(self):
-        """
-        Function main. Where the logic will be.
-        """
+        """Function main. Where the logic will be."""
 
         self.pyversion_required()
         self.verify_user(0)
