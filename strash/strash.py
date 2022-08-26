@@ -163,7 +163,7 @@ class Strash:
             universal_newlines=True,
         )
         for line in p.stdout:
-            out = sub(r"shred:", r"strash:", line)
+            out = sub(r"shred:", rf"{CONFIG['appname'][1]}:", line)
             sys.stdout.write(out)
 
     @staticmethod
