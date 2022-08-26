@@ -256,6 +256,7 @@ class Strash:
     def main(self):
         """Function main. Where the logic will be."""
 
+        self.verify_os()
         self.pyversion_required()
         self.verify_user(0)
         self.verify_dependencies()
