@@ -143,12 +143,13 @@ class Strash:
             raise InvalidOS(os.name)
         return True
 
-    def verify_user(self, uid) -> bool:
+    @staticmethod
+    def ignore_superuser() -> bool:
         """Function to check if script is running with superuser."""
 
-        if os.geteuid() == uid:
+        if os.geteuid() == 0:
             raise PermissionError(
-                f'"{CONFIG["appname"][0]}" can not be run with superuser (root). Aborted!'
+                f'"{CONFIG["appname"][0]}" can not be run with superuser (root) with ID 0. Aborted!'
             )
         return True
 
@@ -258,7 +259,7 @@ class Strash:
 
         self.verify_os()
         self.pyversion_required()
-        self.verify_user(0)
+        self.ignore_superuser()
         self.verify_dependencies()
 
         iterations = self.menu().iterations
