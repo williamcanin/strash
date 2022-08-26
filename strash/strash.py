@@ -187,10 +187,10 @@ class Strash:
                 raise AbsentDependency(pkg)
         return True
 
-    def clean_object(self, obj, iterations):
+    def clean_object(self, obj, iterations, yes=False):
         """This function performs safe cleaning of a directory (recursively) or a specified file."""
 
-        try:
+        def core():
             print(">>> Starting Safe Removal...")
             if isdir(obj):
                 clean_dir = self.code_shred_dir(obj, iterations)
@@ -201,6 +201,18 @@ class Strash:
                 clean_file = self.code_shred_file(obj, iterations)
                 check_output(clean_file, shell=True, universal_newlines=True)
             print("Done!")
+
+        try:
+            if not yes:
+                answer = askyesno(
+                    title="confirmation",
+                    message="Do you really want to permanently safely remove this object(s)?",
+                )
+                if answer:
+                    core()
+                    return True
+                return False
+            core()
         except CalledProcessError:
             print(">>> ERRO: Incorrect directory path or file path.")
             exit(1)
@@ -270,13 +282,13 @@ class Strash:
                 "--path",
                 action="store",
                 metavar="",
-                help="removes a specified (recursive) folder or file.",
+                help="removes a specified (recursive) folder or file",
             )
             parser.add_argument(
-                "-a",
-                "--ask",
+                "-y",
+                "--yes",
                 action="store_true",
-                help="show a dialog asking if you want to continue",
+                help="do not show dialog for action confirmation. (Just for --path option)",
             )
             parser.add_argument(
                 "-n",
@@ -290,7 +302,7 @@ class Strash:
                 "-k",
                 "--kill",
                 action="store_true",
-                help="clean the trash safely and close the terminal",
+                help="safely remove and close the terminal (Only for Terminal)",
             )
             parser.add_argument(
                 "-c",
@@ -319,22 +331,12 @@ class Strash:
         iterations = self.menu().iterations
         path = self.menu().path
         kill = self.menu().kill
-        ask = self.menu().ask
+        yes = self.menu().yes
 
         if credits:
             self.credits()
         elif path:
-            if ask:
-                answer = askyesno(
-                    title="confirmation",
-                    message="Do you really want to permanently safely remove this object(s)?",
-                )
-                if answer:
-                    self.clean_object(path, iterations)
-                    return True
-                return False
-
-            self.clean_object(path, iterations)
+            self.clean_object(path, iterations, yes=yes)
             if kill:
                 os.kill(os.getppid(), signal.SIGHUP)
             return True
