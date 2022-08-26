@@ -15,22 +15,21 @@
 #   GitHub: https://github.com/williamcanin
 
 import os
+import sys
 import signal
 from os.path import join, expanduser, isfile, isdir
 from datetime import date
 from tkinter.messagebox import askyesno
 from subprocess import (
-    check_output,
     PIPE,
+    STDOUT,
     Popen,
     CalledProcessError,
-    run,
-    DEVNULL,
-    STDOUT,
 )
 from re import sub
 from sys import version_info
 from argparse import ArgumentParser, RawTextHelpFormatter
+
 
 # # Import for debugging.
 # from pdb import set_trace
@@ -142,17 +141,30 @@ class Strash:
     @staticmethod
     def code_shred_dir(obj, iterations) -> str:
         """Function that stores the recycle bin cleanup code structure."""
-        return f'{CONFIG["dep"][0]} "{obj}" -depth -type f -exec {CONFIG["dep"][1]} -v -n {iterations} -z -u {{}} \\;'
+        return f'{CONFIG["dep"][0]} "{obj}" -depth -type f -exec {CONFIG["dep"][1]} -n {iterations} -v -z -u {{}} \\;'
 
     @staticmethod
     def code_shred_file(obj, iterations) -> str:
         """Returns a string for shred command for files"""
-        return f"{CONFIG['dep'][1]} -v -n {iterations} -z -u {obj};"
+        return f"{CONFIG['dep'][1]} -n {iterations} -v -z -u {obj};"
 
     @staticmethod
-    def command_empty(obj) -> str:
+    def code_empty(obj) -> str:
         """Function that returns string to delete empty folders."""
         return f'{CONFIG["dep"][0]} "{obj}" -type d -empty -delete'
+
+    @staticmethod
+    def command(cmd):
+        p = Popen(
+            cmd,
+            stdout=PIPE,
+            stderr=STDOUT,
+            shell=True,
+            universal_newlines=True,
+        )
+        for line in p.stdout:
+            out = sub(r"shred:", r"strash:", line)
+            sys.stdout.write(out)
 
     @staticmethod
     def verify_os() -> bool:
@@ -194,12 +206,13 @@ class Strash:
             print(">>> Starting Safe Removal...")
             if isdir(obj):
                 clean_dir = self.code_shred_dir(obj, iterations)
-                check_output(clean_dir, shell=True, universal_newlines=True)
-                empty_dir = self.command_empty(obj)
-                check_output(empty_dir, shell=True, universal_newlines=True)
+                self.command(clean_dir)
+                empty_dir = self.code_empty(obj)
+                self.command(empty_dir)
             else:
                 clean_file = self.code_shred_file(obj, iterations)
-                check_output(clean_file, shell=True, universal_newlines=True)
+                self.command(clean_file)
+
             print("Done!")
 
         try:
@@ -239,12 +252,12 @@ class Strash:
                 print(">>> Cleaning the trash can safely...")
 
                 # Clearing the system's default recycle bin.
-                check_output(clean_trash_user, shell=True, universal_newlines=True)
+                self.command(clean_trash_user)
 
                 # Clearing other trash cans from other devices
                 for item in self.take_all_trash_cans(check):
                     cmd = self.code_shred_dir(item, iterations)
-                    check_output(cmd, shell=True, universal_newlines=True)
+                    self.command(cmd)
 
                 # Cleaning up blank folders
                 Popen("gio trash --empty", shell=True)
@@ -318,9 +331,6 @@ class Strash:
 
     def main(self):
         """Function main. Where the logic will be."""
-
-        # print(self.menu())
-        # exit(0)
 
         self.verify_os()
         self.pyversion_required()
