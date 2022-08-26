@@ -18,7 +18,16 @@ import os
 import signal
 from os.path import join, expanduser, isfile, isdir
 from datetime import date
-from subprocess import check_output, PIPE, Popen
+from tkinter.messagebox import askyesno
+from subprocess import (
+    check_output,
+    PIPE,
+    Popen,
+    CalledProcessError,
+    run,
+    DEVNULL,
+    STDOUT,
+)
 from re import sub
 from sys import version_info
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -131,9 +140,19 @@ class Strash:
         return take_all_trash_cans_
 
     @staticmethod
-    def command(dir_, steps) -> str:
+    def code_shred_dir(obj, iterations) -> str:
         """Function that stores the recycle bin cleanup code structure."""
-        return f'{CONFIG["dep"][0]} "{dir_}" -depth -type f -exec {CONFIG["dep"][1]} -v -n {steps} -z -u {{}} \\;'
+        return f'{CONFIG["dep"][0]} "{obj}" -depth -type f -exec {CONFIG["dep"][1]} -v -n {iterations} -z -u {{}} \\;'
+
+    @staticmethod
+    def code_shred_file(obj, iterations) -> str:
+        """Returns a string for shred command for files"""
+        return f"{CONFIG['dep'][1]} -v -n {iterations} -z -u {obj};"
+
+    @staticmethod
+    def command_empty(obj) -> str:
+        """Function that returns string to delete empty folders."""
+        return f'{CONFIG["dep"][0]} "{obj}" -type d -empty -delete'
 
     @staticmethod
     def verify_os() -> bool:
@@ -168,11 +187,29 @@ class Strash:
                 raise AbsentDependency(pkg)
         return True
 
-    def clean(self, steps) -> bool:
+    def clean_object(self, obj, iterations):
+        """This function performs safe cleaning of a directory (recursively) or a specified file."""
+
+        try:
+            print(">>> Starting Safe Removal...")
+            if isdir(obj):
+                clean_dir = self.code_shred_dir(obj, iterations)
+                check_output(clean_dir, shell=True, universal_newlines=True)
+                empty_dir = self.command_empty(obj)
+                check_output(empty_dir, shell=True, universal_newlines=True)
+            else:
+                clean_file = self.code_shred_file(obj, iterations)
+                check_output(clean_file, shell=True, universal_newlines=True)
+            print("Done!")
+        except CalledProcessError:
+            print(">>> ERRO: Incorrect directory path or file path.")
+            exit(1)
+
+    def clean_trash(self, iterations) -> bool:
         """Function that performs the entire trash disposal operation."""
 
         path_trash_user = join(CONFIG["home"], ".local/share/Trash/files/")
-        clean_trash_user = self.command(path_trash_user, steps)
+        clean_trash_user = self.code_shred_dir(path_trash_user, iterations)
 
         try:
             p = Popen(
@@ -187,14 +224,14 @@ class Strash:
 
             # If there is a full trash can, do the whole process.
             if check:
-                print("Cleaning the trash can safely ...")
+                print(">>> Cleaning the trash can safely...")
 
                 # Clearing the system's default recycle bin.
                 check_output(clean_trash_user, shell=True, universal_newlines=True)
 
                 # Clearing other trash cans from other devices
                 for item in self.take_all_trash_cans(check):
-                    cmd = self.command(item, steps)
+                    cmd = self.code_shred_dir(item, iterations)
                     check_output(cmd, shell=True, universal_newlines=True)
 
                 # Cleaning up blank folders
@@ -229,6 +266,19 @@ class Strash:
                 epilog=f"{CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.",
             )
             parser.add_argument(
+                "-p",
+                "--path",
+                action="store",
+                metavar="",
+                help="removes a specified (recursive) folder or file.",
+            )
+            parser.add_argument(
+                "-a",
+                "--ask",
+                action="store_true",
+                help="show a dialog asking if you want to continue",
+            )
+            parser.add_argument(
                 "-n",
                 "--iterations",
                 action="store",
@@ -257,21 +307,39 @@ class Strash:
     def main(self):
         """Function main. Where the logic will be."""
 
+        # print(self.menu())
+        # exit(0)
+
         self.verify_os()
         self.pyversion_required()
         self.ignore_superuser()
         self.verify_dependencies()
 
+        credits = self.menu().credits
         iterations = self.menu().iterations
+        path = self.menu().path
+        kill = self.menu().kill
+        ask = self.menu().ask
 
-        if self.menu().credits:
+        if credits:
             self.credits()
-        elif self.menu().kill:
-            self.clean(iterations)
-            # Closed console
-            os.kill(os.getppid(), signal.SIGHUP)
-        elif not self.menu().credits and not self.menu().kill:
-            self.clean(iterations)
+        elif path:
+            if ask:
+                answer = askyesno(
+                    title="confirmation",
+                    message="Do you really want to permanently safely remove this object(s)?",
+                )
+                if answer:
+                    self.clean_object(path, iterations)
+                    return True
+                return False
+
+            self.clean_object(path, iterations)
+            if kill:
+                os.kill(os.getppid(), signal.SIGHUP)
+            return True
+        else:
+            self.clean_trash(iterations)
 
 
 if __name__ == "__main__":
