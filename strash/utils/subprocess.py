@@ -4,7 +4,7 @@ from re import sub
 
 
 def command(cmd: str, appname: str) -> None:
-    """"""
+    """Get a code in string and run modifying some output values"""
     p = Popen(
         cmd,
         shell=True,
