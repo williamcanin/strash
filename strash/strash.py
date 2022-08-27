@@ -15,23 +15,22 @@
 #   GitHub: https://github.com/williamcanin
 
 import os
-import sys
 import signal
 from sys import version_info
 from textwrap import dedent
-from os.path import join, isfile, isdir
+from os.path import isfile, isdir
 from datetime import date
 from tkinter.messagebox import askyesno
-from subprocess import (
-    PIPE,
-    STDOUT,
-    Popen,
-    CalledProcessError,
-)
-from re import sub
+from subprocess import CalledProcessError
 from argparse import ArgumentParser, RawTextHelpFormatter
 from utils.exceptions import IncompatibleVersion, AbsentDependency, InvalidOS
-from utils.catches import take_all_trash_cans
+from utils.catches import trash_roots, take_all_trash_cans
+from utils.commands import (
+    str__shred_file_recursive,
+    str__shred_file,
+    str__delete_folder_empty,
+)
+from utils.subprocess import command
 from __init__ import CONFIG
 
 # # Import for debugging.
@@ -65,34 +64,6 @@ class Strash:
 
         print(dedent(CREDITS))
 
-    def code_shred_dir(self, obj, iterations) -> str:
-        """Method that stores the recycle bin cleanup code structure."""
-        return (
-            f'{CONFIG["dep"][0]} "{obj}" -depth -type f -exec '
-            f'{CONFIG["dep"][1]} -n {iterations} -v -z -u {{}} \\;'
-        )
-
-    def code_shred_file(self, obj, iterations) -> str:
-        """Returns a string for shred command for files"""
-        return f"{CONFIG['dep'][1]} -n {iterations} -v -z -u {obj};"
-
-    def code_delete_empty(self, obj) -> str:
-        """Method that returns string to delete empty folders."""
-        return f'{CONFIG["dep"][0]} "{obj}" -type d -empty -delete'
-
-    def command(self, cmd):
-        """"""
-        p = Popen(
-            cmd,
-            stdout=PIPE,
-            stderr=STDOUT,
-            shell=True,
-            universal_newlines=True,
-        )
-        for line in p.stdout:
-            out = sub(r"shred:", f"{CONFIG['appname'][1]}:", line)
-            sys.stdout.write(out)
-
     def verify_os(self) -> bool:
         """Method to verify OS (Compatible with Posix)."""
 
@@ -124,19 +95,16 @@ class Strash:
                 raise AbsentDependency(pkg)
         return True
 
-    def clean_object(self, obj, iterations, yes=False):
+    def clean_object(self, obj, iterations, yes=False, close_term=False):
         """This method performs safe cleaning of a directory (recursively) or a specified file."""
 
         def core():
             print(">>> Starting Safe Removal...")
             if isdir(obj):
-                clean_dir = self.code_shred_dir(obj, iterations)
-                self.command(clean_dir)
-                empty_dir = self.code_delete_empty(obj)
-                self.command(empty_dir)
+                command(str__shred_file_recursive(obj, iterations))
+                command(str__delete_folder_empty(obj))
             else:
-                clean_file = self.code_shred_file(obj, iterations)
-                self.command(clean_file)
+                command(str__shred_file(obj, iterations))
 
             print("Done!")
 
@@ -150,43 +118,44 @@ class Strash:
                     core()
                     return True
                 return False
+
             core()
+
+            if close_term:
+                os.kill(os.getppid(), signal.SIGHUP)
+
         except CalledProcessError:
             print(">>> ERRO: Incorrect directory path or file path.")
             exit(1)
 
-    def clean_trash(self, iterations) -> bool:
-        """Method that performs the entire trash disposal operation."""
-
-        clean_trash_user = self.code_shred_dir(CONFIG["trash_user"], iterations)
+    def clean_trash(self, iterations, close_term=False) -> bool:
+        """Function that performs the entire trash disposal operation."""
 
         try:
-            p = Popen(
-                f"{CONFIG['dep'][2]} list trash:",
-                shell=True,
-                universal_newlines=True,
-                stdout=PIPE,
-            )
-
-            # Checks if there is a recycle bin with content
-            check = p.communicate()[0]
 
             # If there is a full trash can, do the whole process.
-            if check:
+            if trash_roots("gio list trash:"):
                 print(">>> Cleaning the trash can safely...")
 
                 # Clearing the system's default recycle bin.
-                self.command(clean_trash_user)
+                trash_user_command = str__shred_file_recursive(
+                    CONFIG["trash_user"], iterations
+                )
+                command(trash_user_command)
 
                 # Clearing other trash cans from other devices
-                for item in take_all_trash_cans(check):
-                    cmd = self.code_shred_dir(item, iterations)
-                    self.command(cmd)
+                for item in take_all_trash_cans(CONFIG["dep"][2]):
+                    cmd = str__shred_file_recursive(item, iterations)
+                    command(cmd)
 
-                # Cleaning up blank folders
-                Popen("gio trash --empty", shell=True)
+                    # Cleaning up blank folders
+                    blank = str__delete_folder_empty(item)
+                    command(blank)
 
                 print("Done!")
+
+                if close_term:
+                    os.kill(os.getppid(), signal.SIGHUP)
 
                 return True
 
@@ -264,18 +233,15 @@ class Strash:
         credits = self.menu().credits
         iterations = self.menu().iterations
         path = self.menu().path
-        kill = self.menu().kill
+        close_term = self.menu().kill
         yes = self.menu().yes
 
         if credits:
             self.credits()
         elif path:
-            self.clean_object(path, iterations, yes=yes)
-            if kill:
-                os.kill(os.getppid(), signal.SIGHUP)
-            return True
+            self.clean_object(path, iterations, yes=yes, close_term=close_term)
         else:
-            self.clean_trash(iterations)
+            self.clean_trash(iterations, close_term=close_term)
 
 
 if __name__ == "__main__":
