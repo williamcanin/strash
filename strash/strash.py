@@ -17,6 +17,7 @@
 import os
 import sys
 import signal
+from textwrap import dedent
 from os.path import join, expanduser, isfile, isdir
 from datetime import date
 from tkinter.messagebox import askyesno
@@ -34,87 +35,82 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 # # Import for debugging.
 # from pdb import set_trace
 
-CONFIG = {
-    "appname": ["sTrash", "strash"],  # Application/Script name
-    "appversion": "0.2.0",  # Version script
-    "pyversion": 3,  # Python version required
-    "home": expanduser("~"),  # HOME user
-    "dep": ["find", "shred", "gio"],  # Dependencies
-    "author1": {
-        "name": "William C. Canin",
-        "email": "william.costa.canin@gmail.com",
-        "website": "https://williamcanin.github.io",
-        "github": "https://github.com/williamcanin",
-        "locale": "Brasil - SP",
-    },
-}
-
-CREDITS = f"""
-*************************
-{CONFIG['appname'][0]} - Version {CONFIG['appversion']}
-*************************
-
-Credits:
-
-Author: {CONFIG['author1']['name']}
-E-Mail: {CONFIG['author1']['email']}
-Website: {CONFIG['author1']['website']}
-GitHub: {CONFIG['author1']['github']}
-Locale: {CONFIG['author1']['locale']}
-
-Thanks dependencies:
-> {CONFIG["dep"]}
-
-{CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.
-Home: http://github.com/williamcanin/strash
-"""
-
 
 # Exceptions class
 class IncompatibleVersion(Exception):
     """Raised when the installed Python version is incompatible"""
 
-    def __init__(
-        self,
-        pyversion,
-        message=f"{CONFIG['appname'][0]} requires Python version {CONFIG['pyversion']}."
-        f"Are you using version {version_info[0]}",
-    ):
+    def __init__(self, appname, pyversion):
         self.pyversion = pyversion
-        self.message = message
-        super().__init__(f"{self.message}{self.pyversion}")
+        self.appname = appname
+        self.message = (
+            f"{self.appname} requires Python version {self.pyversion}."
+            f"Are you using version {version_info[0]}"
+        )
+        super().__init__(self.message)
 
 
 class AbsentDependency(Exception):
     """Raised when there is a lack of dependency"""
 
-    def __init__(self, pkg, message="The following dependencies are missing: "):
+    def __init__(self, pkg):
         self.pkg = pkg
-        self.message = message
-        super().__init__(f"{self.message}{self.pkg}")
+        self.message = f"The following dependencies are missing: {self.pkg}"
+        super().__init__(self.message)
 
 
 class InvalidOS(Exception):
     """Created when OS is not posix"""
 
-    def __init__(
-        self,
-        os,
-        message=f"{CONFIG['appname'][0]} is only compatible with \"posix\" systems."
-        "Your system is a: ",
-    ):
+    def __init__(self, appname, os):
         self.os = os
-        self.message = message
-        super().__init__(f"{self.message}{self.os}")
+        self.appname = appname
+        self.message = f'{self.appname} is only compatible with "posix" systems. Your system is a: {self.os}'
+        super().__init__(self.message)
 
 
 # Strash class
 class Strash:
-    @staticmethod
-    def credits():
+    def __init__(self):
+        self.CONFIG = {
+            "appname": ["sTrash", "strash"],  # Application/Script name
+            "appversion": "0.2.0",  # Version script
+            "pyversion": 3,  # Python version required
+            "home": expanduser("~"),  # HOME user
+            "dep": ["find", "shred", "gio"],  # Dependencies
+            "author1": {
+                "name": "William C. Canin",
+                "email": "william.costa.canin@gmail.com",
+                "website": "https://williamcanin.github.io",
+                "github": "https://github.com/williamcanin",
+                "locale": "Brasil - SP",
+            },
+        }
+
+        self.CREDITS = f"""
+            *************************
+            {self.CONFIG['appname'][0]} - Version {self.CONFIG['appversion']}
+            *************************
+
+            Credits:
+
+            Author: {self.CONFIG['author1']['name']}
+            E-Mail: {self.CONFIG['author1']['email']}
+            Website: {self.CONFIG['author1']['website']}
+            GitHub: {self.CONFIG['author1']['github']}
+            Locale: {self.CONFIG['author1']['locale']}
+
+            Thanks dependencies:
+            > {self.CONFIG["dep"]}
+
+            {self.CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.
+            Home: http://github.com/williamcanin/strash
+            """
+
+    def credits(self):
         """Function to show credits."""
 
-        print(CREDITS)
+        print(dedent(self.CREDITS))
 
     @staticmethod
     def take_all_trash_cans(check) -> set:
@@ -138,23 +134,23 @@ class Strash:
 
         return take_all_trash_cans_
 
-    @staticmethod
-    def code_shred_dir(obj, iterations) -> str:
+    def code_shred_dir(self, obj, iterations) -> str:
         """Function that stores the recycle bin cleanup code structure."""
-        return f'{CONFIG["dep"][0]} "{obj}" -depth -type f -exec {CONFIG["dep"][1]} -n {iterations} -v -z -u {{}} \\;'
+        return (
+            f'{self.CONFIG["dep"][0]} "{obj}" -depth -type f -exec '
+            f'{self.CONFIG["dep"][1]} -n {iterations} -v -z -u {{}} \\;'
+        )
 
-    @staticmethod
-    def code_shred_file(obj, iterations) -> str:
+    def code_shred_file(self, obj, iterations) -> str:
         """Returns a string for shred command for files"""
-        return f"{CONFIG['dep'][1]} -n {iterations} -v -z -u {obj};"
+        return f"{self.CONFIG['dep'][1]} -n {iterations} -v -z -u {obj};"
 
-    @staticmethod
-    def code_empty(obj) -> str:
+    def code_delete_empty(self, obj) -> str:
         """Function that returns string to delete empty folders."""
-        return f'{CONFIG["dep"][0]} "{obj}" -type d -empty -delete'
+        return f'{self.CONFIG["dep"][0]} "{obj}" -type d -empty -delete'
 
-    @staticmethod
-    def command(cmd):
+    def command(self, cmd):
+        """"""
         p = Popen(
             cmd,
             stdout=PIPE,
@@ -163,38 +159,38 @@ class Strash:
             universal_newlines=True,
         )
         for line in p.stdout:
-            out = sub(r"shred:", rf"{CONFIG['appname'][1]}:", line)
+            out = sub(r"shred:", f"{self.CONFIG['appname'][1]}:", line)
             sys.stdout.write(out)
 
-    @staticmethod
-    def verify_os() -> bool:
+    def verify_os(self) -> bool:
         """Function to verify OS (Compatible with Posix)."""
 
         if os.name != "posix":
-            raise InvalidOS(os.name)
+            raise InvalidOS(self.CONFIG["appname"][0], os.name)
         return True
 
-    @staticmethod
-    def ignore_superuser() -> bool:
+    def ignore_superuser(self) -> bool:
         """Function to check if script is running with superuser."""
 
         if os.geteuid() == 0:
             raise PermissionError(
-                f'"{CONFIG["appname"][0]}" can not be run with superuser (root) with ID 0. Aborted!'
+                f'"{self.CONFIG["appname"][0]}" can not be run with superuser (root) with ID 0. Aborted!'
             )
         return True
 
     def pyversion_required(self) -> bool:
         """Function to check the version of Python that this script uses."""
 
-        if version_info[0] != CONFIG["pyversion"]:
-            raise IncompatibleVersion(CONFIG["pyversion"])
+        if version_info[0] != self.CONFIG["pyversion"]:
+            raise IncompatibleVersion(
+                self.CONFIG["appname"][0], self.CONFIG["pyversion"]
+            )
         return True
 
     def verify_dependencies(self) -> bool:
         """Function to check script dependencies."""
 
-        for pkg in CONFIG["dep"]:
+        for pkg in self.CONFIG["dep"]:
             if not isfile(f"/usr/bin/{pkg}"):
                 raise AbsentDependency(pkg)
         return True
@@ -207,7 +203,7 @@ class Strash:
             if isdir(obj):
                 clean_dir = self.code_shred_dir(obj, iterations)
                 self.command(clean_dir)
-                empty_dir = self.code_empty(obj)
+                empty_dir = self.code_delete_empty(obj)
                 self.command(empty_dir)
             else:
                 clean_file = self.code_shred_file(obj, iterations)
@@ -233,12 +229,12 @@ class Strash:
     def clean_trash(self, iterations) -> bool:
         """Function that performs the entire trash disposal operation."""
 
-        path_trash_user = join(CONFIG["home"], ".local/share/Trash/files/")
+        path_trash_user = join(self.CONFIG["home"], ".local/share/Trash/files/")
         clean_trash_user = self.code_shred_dir(path_trash_user, iterations)
 
         try:
             p = Popen(
-                f"{CONFIG['dep'][2]} list trash:",
+                f"{self.CONFIG['dep'][2]} list trash:",
                 shell=True,
                 universal_newlines=True,
                 stdout=PIPE,
@@ -271,12 +267,14 @@ class Strash:
 
         except Exception as err:
             print(
-                f"An unexpected error occurred that {CONFIG['appname'][0]} cannot identify.",
+                f"An unexpected error occurred that {self.CONFIG['appname'][0]} cannot identify.",
                 err,
             )
             exit(1)
         except PermissionError as err:
-            print(f"{CONFIG['appname'][0]} is not allowed to perform the tasks.", err)
+            print(
+                f"{self.CONFIG['appname'][0]} is not allowed to perform the tasks.", err
+            )
             exit(1)
 
     def menu(self):
@@ -284,11 +282,11 @@ class Strash:
 
         try:
             parser = ArgumentParser(
-                prog=CONFIG["appname"][0],
-                usage=f"{CONFIG['appname'][1]} [options]",
-                description=f'{CONFIG["appname"][0]} that cleans the trash safely without leaving a trace.',
+                prog=self.CONFIG["appname"][0],
+                usage=f"{self.CONFIG['appname'][1]} [options]",
+                description=f'{self.CONFIG["appname"][0]} that cleans the trash safely without leaving a trace.',
                 formatter_class=RawTextHelpFormatter,
-                epilog=f"{CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.",
+                epilog=f"{self.CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.",
             )
             parser.add_argument(
                 "-p",
