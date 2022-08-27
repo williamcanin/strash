@@ -16,7 +16,6 @@
 
 import os
 import signal
-
 from textwrap import dedent
 from os.path import isdir
 from datetime import date
@@ -31,6 +30,12 @@ from utils.commands import (
     str__delete_folder_empty,
 )
 from utils.subprocess import command
+from utils.checking import (
+    verify_os,
+    ignore_superuser,
+    pyversion_required,
+    verify_dependencies,
+)
 from __init__ import CONFIG
 
 # # Import for debugging.
@@ -200,10 +205,10 @@ class Strash:
     def main(self):
         """Method main. Where the logic will be."""
 
-        self.verify_os()
-        self.pyversion_required()
-        self.ignore_superuser()
-        self.verify_dependencies()
+        verify_os(CONFIG["appname"][0])
+        ignore_superuser(CONFIG["appname"][0])
+        pyversion_required(CONFIG["pyversion"], CONFIG["appname"][0])
+        verify_dependencies(CONFIG["dep"])
 
         credits = self.menu().credits
         iterations = self.menu().iterations
