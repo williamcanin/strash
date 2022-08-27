@@ -69,7 +69,7 @@ class Strash:
 
         print(dedent(CREDITS))
 
-    def clean_object(
+    def clean_path(
         self,
         obj: str,
         iterations: str,
@@ -81,10 +81,12 @@ class Strash:
         def core():
             print(">>> Starting Safe Removal...")
             if isdir(obj):
-                command(str__shred_file_recursive(obj, iterations))
-                command(str__delete_folder_empty(obj))
+                command(
+                    str__shred_file_recursive(obj, iterations), CONFIG["appname"][1]
+                )
+                command(str__delete_folder_empty(obj), CONFIG["appname"][1])
             else:
-                command(str__shred_file(obj, iterations))
+                command(str__shred_file(obj, iterations), CONFIG["appname"][1])
 
             print("Done!")
 
@@ -114,23 +116,23 @@ class Strash:
         try:
 
             # If there is a full trash can, do the whole process.
-            if trash_roots("gio list trash:"):
+            if trash_roots(f"{CONFIG['dep'][2]} list trash:"):
                 print(">>> Cleaning the trash can safely...")
 
                 # Clearing the system's default recycle bin.
                 trash_user_command = str__shred_file_recursive(
                     CONFIG["trash_user"], iterations
                 )
-                command(trash_user_command)
+                command(trash_user_command, CONFIG["appname"][1])
 
                 # Clearing other trash cans from other devices
-                for item in take_all_trash_cans(CONFIG["dep"][2]):
+                for item in take_all_trash_cans(f"{CONFIG['dep'][2]} list trash:"):
                     cmd = str__shred_file_recursive(item, iterations)
-                    command(cmd)
+                    command(cmd, CONFIG["appname"][1])
 
                     # Cleaning up blank folders
                     blank = str__delete_folder_empty(item)
-                    command(blank)
+                    command(blank, CONFIG["appname"][1])
 
                 print("Done!")
 
@@ -205,21 +207,24 @@ class Strash:
     def main(self):
         """Method main. Where the logic will be."""
 
+        # Verifications
         verify_os(CONFIG["appname"][0])
         ignore_superuser(CONFIG["appname"][0])
         pyversion_required(CONFIG["pyversion"], CONFIG["appname"][0])
         verify_dependencies(CONFIG["dep"])
 
+        # Get values parameters
         credits = self.menu().credits
         iterations = self.menu().iterations
         path = self.menu().path
         close_term = self.menu().kill
         yes = self.menu().yes
 
+        # Check used option
         if credits:
             self.credits()
         elif path:
-            self.clean_object(path, iterations, yes=yes, close_term=close_term)
+            self.clean_path(path, iterations, yes=yes, close_term=close_term)
         else:
             self.clean_trash(iterations, close_term=close_term)
 
