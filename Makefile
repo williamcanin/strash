@@ -6,8 +6,7 @@ uninstall:
 	@rm -rf $(PREFIX)/share/strash
 
 install: uninstall
-	@mkdir $(PREFIX)/share/strash
-	@cp -p $(BASEDIR)/strash/strash.py $(PREFIX)/share/strash
+	@cp -rp $(BASEDIR)/strash $(PREFIX)/share
 	@ln -s $(PREFIX)/share/strash/strash.py $(PREFIX)/bin/strash
 
 .PHONY: install uninstall
