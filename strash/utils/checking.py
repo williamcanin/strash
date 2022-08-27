@@ -1,4 +1,5 @@
 import os
+import locale
 from os.path import isfile
 from utils.exceptions import IncompatibleVersion, AbsentDependency, InvalidOS
 from sys import version_info
@@ -37,3 +38,10 @@ def verify_dependencies(dependencies: tuple) -> bool:
         if not isfile(f"/usr/bin/{pkg}"):
             raise AbsentDependency(pkg)
     return True
+
+
+def lang_sys(languages: dict) -> str:
+    lang = locale.getdefaultlocale()[0]
+    if lang in languages:
+        return lang
+    return "en_US"

@@ -35,8 +35,9 @@ from utils.checking import (
     ignore_superuser,
     pyversion_required,
     verify_dependencies,
+    lang_sys,
 )
-from __init__ import CONFIG
+from __init__ import CONFIG, LANG
 
 # # Import for debugging.
 # from pdb import set_trace
@@ -79,7 +80,7 @@ class Strash:
         """This method performs safe cleaning of a directory (recursively) or a specified file."""
 
         def core():
-            print(">>> Starting Safe Removal...")
+            print(LANG[lang_sys(LANG)]["str1"])
             if isdir(obj):
                 command(
                     str__shred_file_recursive(obj, iterations), CONFIG["appname"][1]
@@ -88,13 +89,13 @@ class Strash:
             else:
                 command(str__shred_file(obj, iterations), CONFIG["appname"][1])
 
-            print("Done!")
+            print(LANG[lang_sys(LANG)]["done"])
 
         try:
             if not yes:
                 answer = askyesno(
-                    title="confirmation",
-                    message="Do you really want to permanently safely remove this object(s)?",
+                    title=LANG[lang_sys(LANG)]["str2"],
+                    message=LANG[lang_sys(LANG)]["str3"],
                 )
                 if answer:
                     core()
@@ -107,7 +108,7 @@ class Strash:
                 os.kill(os.getppid(), signal.SIGHUP)
 
         except CalledProcessError:
-            print(">>> ERRO: Incorrect directory path or file path.")
+            print(LANG[lang_sys(LANG)]["str4"])
             exit(1)
 
     def clean_trash(self, iterations: str, close_term: bool = False) -> bool:
@@ -118,7 +119,7 @@ class Strash:
             # If there is a full trash can, do the whole process.
             list_trash = trash_roots("gio list trash:")
             if list_trash:
-                print(">>> Cleaning the trash can safely...")
+                print(LANG[lang_sys(LANG)]["str5"])
 
                 # Clearing the system's default recycle bin.
                 trash_user_command = str__shred_file_recursive(
@@ -135,7 +136,7 @@ class Strash:
                     blank = str__delete_folder_empty(item)
                     command(blank, CONFIG["appname"][1])
 
-                print("Done!")
+                print(LANG[lang_sys(LANG)]["done"])
 
                 if close_term:
                     os.kill(os.getppid(), signal.SIGHUP)
@@ -143,16 +144,13 @@ class Strash:
                 return True
 
             # Show message only if all recycle bins are empty.
-            print("All empty trash. :)")
+            print(LANG[lang_sys(LANG)]["str6"])
 
         except Exception as err:
-            print(
-                f"An unexpected error occurred that {CONFIG['appname'][0]} cannot identify.",
-                err,
-            )
+            print(LANG[lang_sys(LANG)]["str7"], err)
             exit(1)
         except PermissionError as err:
-            print(f"{CONFIG['appname'][0]} is not allowed to perform the tasks.", err)
+            print(LANG[lang_sys(LANG)]["str8"], err)
             exit(1)
 
     def menu(self):
@@ -161,7 +159,7 @@ class Strash:
         try:
             parser = ArgumentParser(
                 prog=CONFIG["appname"][0],
-                usage=f"{CONFIG['appname'][1]} [options]",
+                usage=LANG[lang_sys(LANG)]["str9"],
                 description=f'{CONFIG["appname"][0]} that cleans the trash safely without leaving a trace.',
                 formatter_class=RawTextHelpFormatter,
                 epilog=f"{CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.",
