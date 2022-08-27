@@ -136,7 +136,7 @@ class Strash:
                     )
 
                     # Cleaning up blank folders
-                    delete_folders_empty(trash_path)
+                    delete_folders_empty(trash_path, istrash=True)
 
                 print(LANG[lang_sys(LANG)]["done"])
 

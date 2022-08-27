@@ -2,14 +2,15 @@ from random import random
 from os import rename, walk
 from os.path import join
 from shutil import rmtree
+from subprocess import run
 
 
 def shred_cli(filepath: str, iterations: str) -> str:
     """Returns a string for shred command for files"""
-    return f"shred -n {iterations} -v -z -u {filepath};"
+    return f'shred -n {iterations} -v -z -u "{filepath}";'
 
 
-def delete_folders_empty(directory: str) -> None:
+def delete_folders_empty(directory: str, istrash: bool = False) -> bool:
     """Bulk rename all empty folders and the root folder and then remove"""
 
     # Create a new name for the root folder
@@ -30,14 +31,21 @@ def delete_folders_empty(directory: str) -> None:
                 # rename folder
                 rename(path, new_path)
 
-    # Makes slicing taking the previous folder from the root
-    slicing_root = "/".join(directory.split("/")[:-1])
+    if not istrash:
+        # Makes slicing taking the previous folder from the root
+        slicing_root = "/".join(directory.split("/")[:-1])
 
-    # Rename root folder
-    rename(directory, join(slicing_root, new_root_name))
+        # Rename root folder
+        rename(directory, join(slicing_root, new_root_name))
 
-    # Remove root folder
-    rmtree(join(slicing_root, new_root_name))
+        # Remove root folder
+        rmtree(join(slicing_root, new_root_name))
+
+        return True
+
+    run("gio trash --empty", shell=True, universal_newlines=True)
+
+    return True
 
 
 def shred_run_recursive(command, directory: str, iterations: str, appname: str) -> None:
