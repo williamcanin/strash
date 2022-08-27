@@ -160,7 +160,7 @@ class Strash:
             parser = ArgumentParser(
                 prog=CONFIG["appname"][0],
                 usage=LANG[lang_sys(LANG)]["str9"],
-                description=f'{CONFIG["appname"][0]} that cleans the trash safely without leaving a trace.',
+                description=LANG[lang_sys(LANG)]["str10"],
                 formatter_class=RawTextHelpFormatter,
                 epilog=f"{CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.",
             )

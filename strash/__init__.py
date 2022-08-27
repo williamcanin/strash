@@ -36,5 +36,6 @@ LANG = {
         "str7": f"Ocorreu um erro inesperado que {CONFIG['appname'][0]} não consegue identificar.",
         "str8": f"{CONFIG['appname'][0]} não tem permissão para executar as tarefas.",
         "str9": f"{CONFIG['appname'][1]} [opções]",
+        "str10": f'{CONFIG["appname"][0]} limpa as lixeiras e arquivos com segurança sem deixar rastros.',
     },
 }
