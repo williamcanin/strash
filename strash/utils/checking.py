@@ -10,11 +10,11 @@ from utils.exceptions import (
 from sys import version_info
 
 
-def verify_os(appname: str) -> bool:
+def verify_os(message: str) -> bool:
     """To verify OS (Compatible with Posix)."""
 
     if os.name != "posix":
-        raise InvalidOS(appname, os.name)
+        raise InvalidOS(message, os.name)
     return True
 
 

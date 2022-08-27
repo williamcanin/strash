@@ -24,8 +24,7 @@ class AbsentDependency(Exception):
 class InvalidOS(Exception):
     """Created when OS is not posix"""
 
-    def __init__(self, appname: str, os: str):
-        self.os = os
-        self.appname = appname
-        self.message = f'{self.appname} is only compatible with "posix" systems. Your system is a: {self.os}'
-        super().__init__(self.message)
+    def __init__(self, message: str, os_name: str):
+        self.os_name = os_name
+        self.message = message
+        super().__init__(f"{self.message}{self.os_name}")

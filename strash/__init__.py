@@ -31,6 +31,7 @@ LANG = {
             f"Você está usando a version {version_info[0]}."
         ),
         "AbsentDependency": "A seguinte dependências está ausente: ",
+        "InvalidOS": f'{CONFIG["appname"][0]} é compatível apenas com sistemas "posix". Seu sistema é: ',
         "done": ">>> Concluído!",
         "str1": ">>> Iniciando a remoção segura...",
         "str2": "Confirmação",

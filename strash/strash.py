@@ -206,7 +206,7 @@ class Strash:
         """Method main. Where the logic will be."""
 
         # Verifications
-        verify_os(CONFIG["appname"][0])
+        verify_os(LANG[lang_sys(LANG)]["InvalidOS"])
         ignore_superuser(LANG[lang_sys(LANG)]["ApproachedUser"])
         pyversion_required(
             CONFIG["pyversion"], LANG[lang_sys(LANG)]["IncompatibleVersion"]
