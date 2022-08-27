@@ -49,7 +49,7 @@ LANG = {
             f"recycle bins and files safely without leaving a trace."
         ),
         "str11": f"{CONFIG['appname'][0]} © 2018-{date.today().year} - All rights reserved.",
-        "str12": "remove a specified folder or file (recursive)",
+        "str12": "remove a specified folder or file (recursive for folders)",
         "str13": "do not show the action confirmation dialog. (For --path option only)",
         "str14": "replaces N times instead of 3, the default",
         "str15": "safely remove and close the terminal (terminal only)",
@@ -62,6 +62,7 @@ LANG = {
         "str22": "Country",
         "str23": "Thank you dependencies",
         "str24": "Project page",
+        "str25": "show version",
     },
     "pt_BR": {
         "ApproachedUser": f'{CONFIG["appname"][0]} não pode ser executado com superusuário (root) com ID 0. Abortado!',
@@ -89,7 +90,7 @@ LANG = {
             f"lixeiras e arquivos com segurança sem deixar rastros."
         ),
         "str11": f"{CONFIG['appname'][0]} © 2018-{date.today().year} - Todos os direitos reservados.",
-        "str12": "remove uma pasta ou arquivo especificado (recursivo)",
+        "str12": "remove uma pasta ou arquivo especificado (recursivo para pastas)",
         "str13": "não mostre a caixa de diálogo para confirmação da ação. (Apenas para a opção --path)",
         "str14": "substitui N vezes em vez de 3, o padrão",
         "str15": "remova e feche com segurança o terminal (somente para terminal)",
@@ -102,5 +103,6 @@ LANG = {
         "str22": "País",
         "str23": "Obrigado dependências",
         "str24": "Página do projeto",
+        "str25": "mostrar versão",
     },
 }

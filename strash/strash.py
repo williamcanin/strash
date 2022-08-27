@@ -196,6 +196,11 @@ class Strash:
                 action="store_true",
                 help=LANG[lang_sys(LANG)]["str16"],
             )
+            parser.add_argument(
+                "--version",
+                action="store_true",
+                help=LANG[lang_sys(LANG)]["str25"],
+            )
             args = parser.parse_args()
             return args
 
@@ -215,6 +220,7 @@ class Strash:
 
         # Get values parameters
         credits = self.menu().credits
+        version = self.menu().version
         iterations = self.menu().iterations
         path = self.menu().path
         close_term = self.menu().kill
@@ -223,6 +229,8 @@ class Strash:
         # Check used option
         if credits:
             self.credits()
+        elif version:
+            print(f'{CONFIG["appname"][0]}: {CONFIG["appversion"]}')
         elif path:
             self.clean_path(path, iterations, yes=yes, close_term=close_term)
         else:
