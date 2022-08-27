@@ -25,8 +25,10 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from utils.catches import trash_roots, take_all_trash_cans
 from utils.commands import (
     str__shred_file_recursive,
-    str__shred_file,
+    str__shred_command,
     str__delete_folder_empty,
+    shred_run_recursive,
+    delete_folders_empty,
 )
 from utils.subprocess import command
 from utils.checking import (
@@ -81,12 +83,10 @@ class Strash:
         def core():
             print(LANG[lang_sys(LANG)]["str1"])
             if isdir(obj):
-                command(
-                    str__shred_file_recursive(obj, iterations), CONFIG["appname"][1]
-                )
-                command(str__delete_folder_empty(obj), CONFIG["appname"][1])
+                shred_run_recursive(command, obj, iterations, CONFIG["appname"][1])
+                delete_folders_empty(obj)
             else:
-                command(str__shred_file(obj, iterations), CONFIG["appname"][1])
+                command(str__shred_command(obj, iterations), CONFIG["appname"][1])
 
             print(LANG[lang_sys(LANG)]["done"])
 
@@ -121,19 +121,24 @@ class Strash:
                 print(LANG[lang_sys(LANG)]["str5"])
 
                 # Clearing the system's default recycle bin.
-                trash_user_command = str__shred_file_recursive(
-                    CONFIG["trash_user"], iterations
+                shred_run_recursive(
+                    command,
+                    CONFIG["trash_user"],
+                    iterations,
+                    CONFIG["appname"][1],
                 )
-                command(trash_user_command, CONFIG["appname"][1])
 
                 # Clearing other trash cans from other devices
-                for item in take_all_trash_cans(list_trash):
-                    cmd = str__shred_file_recursive(item, iterations)
-                    command(cmd, CONFIG["appname"][1])
+                for trash_path in take_all_trash_cans(list_trash):
+                    shred_run_recursive(
+                        command,
+                        trash_path,
+                        iterations,
+                        CONFIG["appname"][1],
+                    )
 
                     # Cleaning up blank folders
-                    blank = str__delete_folder_empty(item)
-                    command(blank, CONFIG["appname"][1])
+                    delete_folders_empty(trash_path)
 
                 print(LANG[lang_sys(LANG)]["done"])
 
