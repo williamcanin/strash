@@ -6,7 +6,7 @@ from sys import version_info
 CONFIG = {
     "appname": ["sTrash", "strash"],  # Application/Script name
     "appversion": "0.2.0",  # Version script
-    "pyversion": 4,  # Python version required
+    "pyversion": 3,  # Python version required
     "home": str(Path.home()),  # HOME user
     "trash_user": join(
         str(Path.home()), ".local/share/Trash/files/"
@@ -23,7 +23,46 @@ CONFIG = {
 
 
 LANG = {
-    "en_US": {},
+    "en_US": {
+        "ApproachedUser": f'{CONFIG["appname"][0]} cannot be run with superuser (root) with ID 0. Aborted!',
+        "IncompatibleVersion": (
+            f'{CONFIG["appname"][0]} requires the {CONFIG["pyversion"]} version of Python. '
+            f"You are using version {version_info[0]}."
+        ),
+        "AbsentDependency": "The following dependencies are missing: ",
+        "InvalidOS": f'{CONFIG["appname"][0]} is only compatible with "posix" systems. Your system is: ',
+        "done": ">>> Done!",
+        "str1": ">>> Starting safe removal...",
+        "str2": "Confirmation",
+        "str3": (
+            "Want to permanently delete the file(s) SECURELY?\n"
+            'WARNING!!! THIS ACTION IS IRREVERSIBLE IF YOU CLICK "YES"!'
+        ),
+        "str4": ">>> ERROR: Incorrect directory path or file path.",
+        "str5": ">>> Safely cleaning the recycle bin...",
+        "str6": ">>> Trash is already empty. :)",
+        "str7": f"An unexpected error occurred that {CONFIG['appname'][0]} cannot identify.",
+        "str8": f"{CONFIG['appname'][0]} does not have permission to run the tasks.",
+        "str9": f"{CONFIG['appname'][1]} [options]",
+        "str10": (
+            f'{CONFIG["appname"][0]} is a program that runs on top of "shred" to clean the '
+            f"recycle bins and files safely without leaving a trace."
+        ),
+        "str11": f"{CONFIG['appname'][0]} © 2018-{date.today().year} - All rights reserved.",
+        "str12": "remove a specified folder or file (recursive)",
+        "str13": "do not show the action confirmation dialog. (For --path option only)",
+        "str14": "replaces N times instead of 3, the default",
+        "str15": "safely remove and close the terminal (terminal only)",
+        "str16": "show credits",
+        "str17": ">>> Error passing arguments",
+        "str18": "Version",
+        "str19": "Credits",
+        "str20": "Author",
+        "str21": "Personal page",
+        "str22": "Country",
+        "str23": "Thank you dependencies",
+        "str24": "Project page",
+    },
     "pt_BR": {
         "ApproachedUser": f'{CONFIG["appname"][0]} não pode ser executado com superusuário (root) com ID 0. Abortado!',
         "IncompatibleVersion": (
@@ -37,11 +76,11 @@ LANG = {
         "str2": "Confirmação",
         "str3": (
             "Desejar excluir permanentemente o(s) arquivo(s) de forma SEGURA?\n"
-            'ATENÇÃO!!! ESTÁ AÇÃO É IRREVESSÍVEL SE VOCÊ CLICAR EM "SIM"!'
+            'ATENÇÃO!!! ESTÁ AÇÃO É IRREVERSÍVEL SE VOCÊ CLICAR EM "SIM"!'
         ),
         "str4": ">>> ERRO: Caminho de diretório ou caminho de arquivo incorreto.",
         "str5": ">>> Limpando a lixeira com segurança...",
-        "str6": ">>> Trash is already empty. :)",
+        "str6": ">>> Lixeira já está vazia. :)",
         "str7": f"Ocorreu um erro inesperado que {CONFIG['appname'][0]} não consegue identificar.",
         "str8": f"{CONFIG['appname'][0]} não tem permissão para executar as tarefas.",
         "str9": f"{CONFIG['appname'][1]} [opções]",
