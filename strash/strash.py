@@ -116,7 +116,8 @@ class Strash:
         try:
 
             # If there is a full trash can, do the whole process.
-            if trash_roots(f"{CONFIG['dep'][2]} list trash:"):
+            list_trash = trash_roots("gio list trash:")
+            if list_trash:
                 print(">>> Cleaning the trash can safely...")
 
                 # Clearing the system's default recycle bin.
@@ -126,7 +127,7 @@ class Strash:
                 command(trash_user_command, CONFIG["appname"][1])
 
                 # Clearing other trash cans from other devices
-                for item in take_all_trash_cans(f"{CONFIG['dep'][2]} list trash:"):
+                for item in take_all_trash_cans(list_trash):
                     cmd = str__shred_file_recursive(item, iterations)
                     command(cmd, CONFIG["appname"][1])
 
@@ -202,7 +203,7 @@ class Strash:
             return args
 
         except Exception as err:
-            print("Error in passing arguments..", err)
+            print("Error in passing arguments...", err)
 
     def main(self):
         """Method main. Where the logic will be."""
