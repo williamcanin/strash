@@ -162,20 +162,20 @@ class Strash:
                 usage=LANG[lang_sys(LANG)]["str9"],
                 description=LANG[lang_sys(LANG)]["str10"],
                 formatter_class=RawTextHelpFormatter,
-                epilog=f"{CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.",
+                epilog=LANG[lang_sys(LANG)]["str11"],
             )
             parser.add_argument(
                 "-p",
                 "--path",
                 action="store",
                 metavar="",
-                help="removes a specified (recursive) folder or file",
+                help=LANG[lang_sys(LANG)]["str12"],
             )
             parser.add_argument(
                 "-y",
                 "--yes",
                 action="store_true",
-                help="do not show dialog for action confirmation. (Just for --path option)",
+                help=LANG[lang_sys(LANG)]["str13"],
             )
             parser.add_argument(
                 "-n",
@@ -183,25 +183,25 @@ class Strash:
                 action="store",
                 default="3",
                 metavar="",
-                help="overwrites N times instead of 3, the default",
+                help=LANG[lang_sys(LANG)]["str14"],
             )
             parser.add_argument(
                 "-k",
                 "--kill",
                 action="store_true",
-                help="safely remove and close the terminal (Only for Terminal)",
+                help=LANG[lang_sys(LANG)]["str15"],
             )
             parser.add_argument(
                 "-c",
                 "--credits",
                 action="store_true",
-                help="show credits",
+                help=LANG[lang_sys(LANG)]["str16"],
             )
             args = parser.parse_args()
             return args
 
         except Exception as err:
-            print("Error in passing arguments...", err)
+            print(LANG[lang_sys(LANG)]["str17"], err)
 
     def main(self):
         """Method main. Where the logic will be."""

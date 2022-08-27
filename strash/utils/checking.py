@@ -20,6 +20,7 @@ def ignore_superuser(appname: str) -> bool:
         raise PermissionError(
             f'"{appname}" can not be run with superuser (root) with ID 0. Aborted!'
         )
+
     return True
 
 
@@ -28,6 +29,7 @@ def pyversion_required(pyversion: str, appname: str) -> bool:
 
     if version_info[0] != pyversion:
         raise IncompatibleVersion(appname, pyversion)
+
     return True
 
 
@@ -37,11 +39,16 @@ def verify_dependencies(dependencies: tuple) -> bool:
     for pkg in dependencies:
         if not isfile(f"/usr/bin/{pkg}"):
             raise AbsentDependency(pkg)
+
     return True
 
 
 def lang_sys(languages: dict) -> str:
+    """Get the language of the operating system."""
+
     lang = locale.getdefaultlocale()[0]
+
     if lang in languages:
         return lang
+
     return "en_US"
