@@ -1,11 +1,12 @@
 from pathlib import Path
 from os.path import join
 from datetime import date
+from sys import version_info
 
 CONFIG = {
     "appname": ["sTrash", "strash"],  # Application/Script name
     "appversion": "0.2.0",  # Version script
-    "pyversion": 3,  # Python version required
+    "pyversion": 4,  # Python version required
     "home": str(Path.home()),  # HOME user
     "trash_user": join(
         str(Path.home()), ".local/share/Trash/files/"
@@ -24,6 +25,12 @@ CONFIG = {
 LANG = {
     "en_US": {},
     "pt_BR": {
+        "ApproachedUser": f'{CONFIG["appname"][0]} não pode ser executado com superusuário (root) com ID 0. Abortado!',
+        "IncompatibleVersion": (
+            f'{CONFIG["appname"][0]} requer a versão {CONFIG["pyversion"]} do Python. '
+            f"Você está usando a version {version_info[0]}."
+        ),
+        "AbsentDependency": "A seguinte dependências está ausente: ",
         "done": ">>> Concluído!",
         "str1": ">>> Iniciando a remoção segura...",
         "str2": "Confirmação",
@@ -48,5 +55,12 @@ LANG = {
         "str15": "remova e feche com segurança o terminal (somente para terminal)",
         "str16": "mostrar os créditos",
         "str17": ">>> Erro ao passar argumentos",
+        "str18": "Versão",
+        "str19": "Créditos",
+        "str20": "Autor",
+        "str21": "Página pessoal",
+        "str22": "País",
+        "str23": "Obrigado dependências",
+        "str24": "Página do projeto",
     },
 }

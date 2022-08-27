@@ -1,7 +1,12 @@
 import os
 import locale
 from os.path import isfile
-from utils.exceptions import IncompatibleVersion, AbsentDependency, InvalidOS
+from utils.exceptions import (
+    IncompatibleVersion,
+    AbsentDependency,
+    InvalidOS,
+    ApproachedUser,
+)
 from sys import version_info
 
 
@@ -13,32 +18,30 @@ def verify_os(appname: str) -> bool:
     return True
 
 
-def ignore_superuser(appname: str) -> bool:
+def ignore_superuser(message: str) -> bool:
     """To check if script is running with superuser."""
 
     if os.geteuid() == 0:
-        raise PermissionError(
-            f'"{appname}" can not be run with superuser (root) with ID 0. Aborted!'
-        )
+        raise ApproachedUser(message)
 
     return True
 
 
-def pyversion_required(pyversion: str, appname: str) -> bool:
+def pyversion_required(pyversion: str, message: str) -> bool:
     """To check the version of Python that this script uses."""
 
     if version_info[0] != pyversion:
-        raise IncompatibleVersion(appname, pyversion)
+        raise IncompatibleVersion(message)
 
     return True
 
 
-def verify_dependencies(dependencies: tuple) -> bool:
+def verify_dependencies(message: str, dependencies: tuple) -> bool:
     """To check script dependencies."""
 
-    for pkg in dependencies:
-        if not isfile(f"/usr/bin/{pkg}"):
-            raise AbsentDependency(pkg)
+    for package in dependencies:
+        if not isfile(f"/usr/bin/{package}"):
+            raise AbsentDependency(f"{message}{package}")
 
     return True
 

@@ -18,7 +18,6 @@ import os
 import signal
 from textwrap import dedent
 from os.path import isdir
-from datetime import date
 from tkinter.messagebox import askyesno
 from subprocess import CalledProcessError
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -50,22 +49,22 @@ class Strash:
 
         CREDITS = f"""
             *************************
-            {CONFIG['appname'][0]} - Version {CONFIG['appversion']}
+            {CONFIG['appname'][0]} - {LANG[lang_sys(LANG)]["str18"]} {CONFIG['appversion']}
             *************************
 
-            Credits:
+            {LANG[lang_sys(LANG)]["str19"]}:
 
-            Author: {CONFIG['author1']['name']}
+            {LANG[lang_sys(LANG)]["str20"]}: {CONFIG['author1']['name']}
             E-Mail: {CONFIG['author1']['email']}
-            Website: {CONFIG['author1']['website']}
+            {LANG[lang_sys(LANG)]["str21"]}: {CONFIG['author1']['website']}
             GitHub: {CONFIG['author1']['github']}
-            Locale: {CONFIG['author1']['locale']}
+            {LANG[lang_sys(LANG)]["str22"]}: {CONFIG['author1']['locale']}
 
-            Thanks dependencies:
+            {LANG[lang_sys(LANG)]["str23"]}:
             > {CONFIG["dep"]}
 
-            {CONFIG['appname'][0]} © 2018-{date.today().year} - All Right Reserved.
-            Home: http://github.com/williamcanin/strash
+            {LANG[lang_sys(LANG)]["str11"]}
+            {LANG[lang_sys(LANG)]["str24"]}: http://github.com/williamcanin/strash
             """
 
         print(dedent(CREDITS))
@@ -208,9 +207,11 @@ class Strash:
 
         # Verifications
         verify_os(CONFIG["appname"][0])
-        ignore_superuser(CONFIG["appname"][0])
-        pyversion_required(CONFIG["pyversion"], CONFIG["appname"][0])
-        verify_dependencies(CONFIG["dep"])
+        ignore_superuser(LANG[lang_sys(LANG)]["ApproachedUser"])
+        pyversion_required(
+            CONFIG["pyversion"], LANG[lang_sys(LANG)]["IncompatibleVersion"]
+        )
+        verify_dependencies(LANG[lang_sys(LANG)]["AbsentDependency"], CONFIG["dep"])
 
         # Get values parameters
         credits = self.menu().credits

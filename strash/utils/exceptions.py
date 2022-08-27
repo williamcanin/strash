@@ -1,27 +1,24 @@
-# Exceptions class
-from sys import version_info
-
-
 class IncompatibleVersion(Exception):
     """Raised when the installed Python version is incompatible"""
 
-    def __init__(self, appname: str, pyversion: str):
-        self.pyversion = pyversion
-        self.appname = appname
-        self.message = (
-            f"{self.appname} requires Python version {self.pyversion}. "
-            f"Are you using version {version_info[0]}"
-        )
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+
+class ApproachedUser(PermissionError):
+    def __init__(self, message):
+        self.message = message
         super().__init__(self.message)
 
 
 class AbsentDependency(Exception):
     """Raised when there is a lack of dependency"""
 
-    def __init__(self, pkg: str):
-        self.pkg = pkg
-        self.message = f"The following dependencies are missing: {self.pkg}"
-        super().__init__(self.message)
+    def __init__(self, message: str, package: str):
+        self.package = package
+        self.message = message
+        super().__init__(f"{self.message}{self.package}")
 
 
 class InvalidOS(Exception):
