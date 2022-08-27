@@ -4,26 +4,9 @@ from os.path import join
 from shutil import rmtree
 
 
-def str__shred_file_recursive(dirpath: str, iterations: str) -> str:
-    """That stores the recycle bin cleanup code structure."""
-    return (
-        f'find "{dirpath}" -depth -type f -exec shred -n {iterations} -v -z -u {{}} \\;'
-    )
-
-
-def str__shred_file(filepath: str, iterations: str) -> str:
+def shred_cli(filepath: str, iterations: str) -> str:
     """Returns a string for shred command for files"""
     return f"shred -n {iterations} -v -z -u {filepath};"
-
-
-def str__shred_command(filepath: str, iterations: str) -> str:
-    """Returns a string for shred command for files"""
-    return f"shred -n {iterations} -v -z -u {filepath};"
-
-
-def str__delete_folder_empty(dirpath: str) -> str:
-    """That returns string to delete empty folders."""
-    return f'find "{dirpath}" -type d -empty -delete'
 
 
 def delete_folders_empty(directory: str) -> None:
@@ -57,8 +40,12 @@ def delete_folders_empty(directory: str) -> None:
     rmtree(join(slicing_root, new_root_name))
 
 
-def shred_run_recursive(command, directory: str, iterations: str, appname: str):
+def shred_run_recursive(command, directory: str, iterations: str, appname: str) -> None:
+    """Do all cleaning recursively in a given folder."""
+
     for root, _, files in walk(directory, topdown=False):
         for file in files:
+            # Get current file
             filepath = join(root, file)
-            command(str__shred_command(filepath, iterations), appname)
+
+            command(shred_cli(filepath, iterations), appname)

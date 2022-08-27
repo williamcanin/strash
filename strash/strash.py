@@ -24,9 +24,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 from utils.catches import trash_roots, take_all_trash_cans
 from utils.commands import (
-    str__shred_file_recursive,
-    str__shred_command,
-    str__delete_folder_empty,
+    shred_cli,
     shred_run_recursive,
     delete_folders_empty,
 )
@@ -86,7 +84,7 @@ class Strash:
                 shred_run_recursive(command, obj, iterations, CONFIG["appname"][1])
                 delete_folders_empty(obj)
             else:
-                command(str__shred_command(obj, iterations), CONFIG["appname"][1])
+                command(shred_cli(obj, iterations), CONFIG["appname"][1])
 
             print(LANG[lang_sys(LANG)]["done"])
 
