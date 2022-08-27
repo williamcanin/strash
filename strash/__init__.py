@@ -11,7 +11,7 @@ CONFIG = {
     "trash_user": join(
         str(Path.home()), ".local/share/Trash/files/"
     ),  # Trash user system default
-    "dep": ("find", "shred", "gio"),  # Dependencies
+    "dep": ("shred", "gio"),  # Dependencies
     "author1": {
         "name": "William C. Canin",
         "email": "william.costa.canin@gmail.com",
