@@ -64,7 +64,7 @@ class Strash:
             > {CONFIG["dep"]}
 
             {LANG[lang_sys(LANG)]["str11"]}
-            {LANG[lang_sys(LANG)]["str24"]}: http://github.com/williamcanin/strash
+            {LANG[lang_sys(LANG)]["str24"]}: {CONFIG["url"]}
             """
 
         print(dedent(CREDITS))

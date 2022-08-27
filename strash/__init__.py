@@ -6,6 +6,7 @@ from sys import version_info
 CONFIG = {
     "appname": ["sTrash", "strash"],  # Application/Script name
     "appversion": "0.2.0",  # Version script
+    "url": "http://github.com/williamcanin/strash",
     "pyversion": 3,  # Python version required
     "home": str(Path.home()),  # HOME user
     "trash_user": join(
