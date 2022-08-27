@@ -3,13 +3,13 @@ from re import sub
 from subprocess import Popen, PIPE
 
 
-def trash_roots(command_gio):
+def trash_roots(command_gio: str):
     """"""
     p = Popen(command_gio, shell=True, universal_newlines=True, stdout=PIPE)
     return p.communicate()[0]
 
 
-def take_all_trash_cans(command_gio) -> set:
+def take_all_trash_cans(command_gio: str) -> set:
     """Function to get all ROOT directory from recycle bins on devices."""
 
     take_all_trash_cans_ = set()

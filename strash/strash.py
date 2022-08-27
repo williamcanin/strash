@@ -16,14 +16,14 @@
 
 import os
 import signal
-from sys import version_info
+
 from textwrap import dedent
-from os.path import isfile, isdir
+from os.path import isdir
 from datetime import date
 from tkinter.messagebox import askyesno
 from subprocess import CalledProcessError
 from argparse import ArgumentParser, RawTextHelpFormatter
-from utils.exceptions import IncompatibleVersion, AbsentDependency, InvalidOS
+
 from utils.catches import trash_roots, take_all_trash_cans
 from utils.commands import (
     str__shred_file_recursive,
@@ -64,38 +64,13 @@ class Strash:
 
         print(dedent(CREDITS))
 
-    def verify_os(self) -> bool:
-        """Method to verify OS (Compatible with Posix)."""
-
-        if os.name != "posix":
-            raise InvalidOS(CONFIG["appname"][0], os.name)
-        return True
-
-    def ignore_superuser(self) -> bool:
-        """Method to check if script is running with superuser."""
-
-        if os.geteuid() == 0:
-            raise PermissionError(
-                f'"{CONFIG["appname"][0]}" can not be run with superuser (root) with ID 0. Aborted!'
-            )
-        return True
-
-    def pyversion_required(self) -> bool:
-        """Method to check the version of Python that this script uses."""
-
-        if version_info[0] != CONFIG["pyversion"]:
-            raise IncompatibleVersion(CONFIG["appname"][0], CONFIG["pyversion"])
-        return True
-
-    def verify_dependencies(self) -> bool:
-        """Method to check script dependencies."""
-
-        for pkg in CONFIG["dep"]:
-            if not isfile(f"/usr/bin/{pkg}"):
-                raise AbsentDependency(pkg)
-        return True
-
-    def clean_object(self, obj, iterations, yes=False, close_term=False):
+    def clean_object(
+        self,
+        obj: str,
+        iterations: str,
+        yes: bool = False,
+        close_term: bool = False,
+    ):
         """This method performs safe cleaning of a directory (recursively) or a specified file."""
 
         def core():
@@ -128,7 +103,7 @@ class Strash:
             print(">>> ERRO: Incorrect directory path or file path.")
             exit(1)
 
-    def clean_trash(self, iterations, close_term=False) -> bool:
+    def clean_trash(self, iterations: str, close_term: bool = False) -> bool:
         """Function that performs the entire trash disposal operation."""
 
         try:

@@ -3,7 +3,7 @@ from subprocess import PIPE, STDOUT, Popen
 from re import sub
 
 
-def command(cmd, appname):
+def command(cmd: str, appname: str) -> None:
     """"""
     p = Popen(
         cmd,
