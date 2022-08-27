@@ -1,6 +1,7 @@
 from random import random
-from os import rename, walk, rmdir
+from os import rename, walk
 from os.path import join
+from shutil import rmtree
 
 
 def str__shred_file_recursive(dirpath: str, iterations: str) -> str:
@@ -48,4 +49,4 @@ def delete_folder_empty(directory: str) -> None:
     rename(directory, join(slicing_root, new_root_name))
 
     # Remove root folder
-    rmdir(join(slicing_root, new_root_name))
+    rmtree(join(slicing_root, new_root_name))
