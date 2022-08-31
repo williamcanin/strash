@@ -155,7 +155,7 @@ class Strash:
             print(LANG[lang_sys(LANG)]["str8"], err)
             exit(1)
 
-    def menu(self):
+    def menu(self) -> dict:
         """Method to create menu."""
 
         try:
@@ -205,7 +205,7 @@ class Strash:
                 help=LANG[lang_sys(LANG)]["str25"],
             )
             args = parser.parse_args()
-            return args
+            return vars(args)
 
         except Exception as err:
             print(LANG[lang_sys(LANG)]["str17"], err)
@@ -222,12 +222,12 @@ class Strash:
         verify_dependencies(LANG[lang_sys(LANG)]["AbsentDependency"], CONFIG["dep"])
 
         # Get values parameters
-        credits = self.menu().credits
-        version = self.menu().version
-        iterations = self.menu().iterations
-        path = self.menu().path
-        close_term = self.menu().kill
-        yes = self.menu().yes
+        credits = self.menu()["credits"]
+        version = self.menu()["version"]
+        iterations = self.menu()["iterations"]
+        path = self.menu()["path"]
+        close_term = self.menu()["kill"]
+        yes = self.menu()["yes"]
 
         # Check used option
         if credits:
