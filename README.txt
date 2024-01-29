@@ -3,14 +3,19 @@
 [ ABOUT ]
 
   sTrash is a simple script for Linux with the function to safely remove FILES
-from the recycle bin with no chance of recovery.
+from the recycle bin with no chance of recovery for Linux.
 
 [ DEPENDENCIES ]
 
-  * linux
-  * python >= 3.9
-  * gio (glib2) >= 2.70
-  * shred >= 9.0
+  * All distros
+  -- shred
+	* Arch Linux
+  -- python >= 3.9
+  -- gio (glib2)
+  * Debian
+  -- python3 >= 3.9
+  -- python3-tk
+  -- libglib2.0-dev
 
 [ INSTALL ]
 
