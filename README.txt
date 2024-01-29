@@ -9,7 +9,7 @@ from the recycle bin with no chance of recovery for Linux.
 
   * All distros
   -- shred
-	* Arch Linux
+  * Arch Linux
   -- python >= 3.9
   -- gio (glib2)
   * Debian
