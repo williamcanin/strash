@@ -151,7 +151,7 @@ class Strash:
         except Exception as err:
             print(LANG[lang_sys(LANG)]["str7"], err)
             exit(1)
-        except PermissionError as err:\
+        except PermissionError as err:
             print(LANG[lang_sys(LANG)]["str8"], err)
             exit(1)
 
